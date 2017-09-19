@@ -42,7 +42,7 @@ class Actor
   end
 
   def start
-    @thread = Thread.start {
+    @thread = Thread.start do
       while msg = @msg_box.pop
         case msg
         when Struct::SetNeighbor
@@ -53,7 +53,7 @@ class Actor
           raise "unhandled msg #{msg}"
         end
       end
-    }
+    end
   end
 
   def stop
@@ -70,42 +70,39 @@ def snd(receiver, msg)
   receiver.receive msg
 end
 
-def make_ring(n, m)
-  actors = (0..n).map {|n| Actor.new(n)}
+def make_ring(n, _m)
+  actors = (0..n).map { |n| Actor.new(n) }
   neighbors = [actors.last] + actors[0, actors.size - 1]
 
-  actors.zip(neighbors).each {|actor, n| actor.neighbor = n}
+  actors.zip(neighbors).each { |actor, n| actor.neighbor = n }
 
-  _threads = actors.zip(neighbors).map {|actor, n| actor.start}
+  _threads = actors.zip(neighbors).map { |actor, _n| actor.start }
 
   warn _threads
   actors
 end
 
 def bench_n_m(n, m)
+  memo = {}
+  memo_file = 'ring_cache'
+  File.exist?(memo_file) && open(memo_file) { |f| memo = Marshal.load(f.read) }
+  return memo[[n, m]] if memo[[n, m]]
 
-    memo = {}
-    memo_file = 'ring_cache'
-    File.exists?(memo_file) && open(memo_file) {|f| memo = Marshal.load(f.read)}
-    if memo[[n, m]]
-      return memo[[n, m]]
-    end
+  ring = make_ring(n, m)
 
-    ring = make_ring(n, m)
+  set_neighbor = Struct.new('SetNeighbor', :neighbor)
+  message = Struct.new('Message', :msg, :count)
 
-    set_neighbor = Struct.new("SetNeighbor", :neighbor)
-    message = Struct.new("Message", :msg, :count)
+  t1 = Time.now
+  ring.first.receive(message.new('hey', m))
+  # ring.map {|actor| actor.thread.join}  # dead lock here?
+  ring.first.thread.join
+  t2 = Time.now
 
-    t1 = Time.now
-    ring.first.receive(message.new('hey', m))
-    # ring.map {|actor| actor.thread.join}  # dead lock here?
-    ring.first.thread.join
-    t2 = Time.now
-
-    elapsed = t2 - t1
-    memo[[n, m]] = elapsed
-    open('ring_cache', 'w') {|f| f.write Marshal.dump(memo)}
-    elapsed
+  elapsed = t2 - t1
+  memo[[n, m]] = elapsed
+  open('ring_cache', 'w') { |f| f.write Marshal.dump(memo) }
+  elapsed
 end
 
 def bench
