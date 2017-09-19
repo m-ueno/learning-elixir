@@ -5,10 +5,7 @@
 #   ruby ring.rb 2> /dev/null
 #
 
-require 'benchmark'
-require 'json'
 require 'thread'
-require 'pp'
 
 class Actor
   attr_accessor :actor_id, :neighbor, :msg_box, :thread
@@ -22,7 +19,7 @@ class Actor
     "#<Actor:@id=#{@actor_id}, @neighbor=#{@neighbor.actor_id}>"
   end
 
-  def proxy_message(msg)
+  def forward_message(msg)
     if @actor_id == 0
       # master node
       warn "0(master): #{msg}"
@@ -43,12 +40,12 @@ class Actor
 
   def start
     @thread = Thread.start do
-      while msg = @msg_box.pop
+      while (msg = @msg_box.pop)
         case msg
         when Struct::SetNeighbor
           @neighbor = msg.neighbor
         when Struct::Message
-          proxy_message(msg)
+          forward_message(msg)
         else
           raise "unhandled msg #{msg}"
         end
@@ -66,51 +63,41 @@ class Actor
   end
 end
 
-def snd(receiver, msg)
-  receiver.receive msg
-end
-
-def make_ring(n, _m)
-  actors = (0..n).map { |n| Actor.new(n) }
+def make_ring(n)
+  actors = (0..n).map { |i| Actor.new(i) }
   neighbors = [actors.last] + actors[0, actors.size - 1]
 
-  actors.zip(neighbors).each { |actor, n| actor.neighbor = n }
+  actors.zip(neighbors).each { |actor, neighbor| actor.neighbor = neighbor }
 
-  _threads = actors.zip(neighbors).map { |actor, _n| actor.start }
+  threads = actors.zip(neighbors).map { |actor, _n| actor.start }
 
-  warn _threads
+  warn threads
+
   actors
 end
 
 def bench_n_m(n, m)
-  memo = {}
-  memo_file = 'ring_cache'
-  File.exist?(memo_file) && open(memo_file) { |f| memo = Marshal.load(f.read) }
-  return memo[[n, m]] if memo[[n, m]]
+  ring = make_ring(n)
 
-  ring = make_ring(n, m)
-
-  set_neighbor = Struct.new('SetNeighbor', :neighbor)
+  Struct.new('SetNeighbor', :neighbor)
   message = Struct.new('Message', :msg, :count)
 
   t1 = Time.now
   ring.first.receive(message.new('hey', m))
-  # ring.map {|actor| actor.thread.join}  # dead lock here?
   ring.first.thread.join
   t2 = Time.now
 
   elapsed = t2 - t1
-  memo[[n, m]] = elapsed
-  open('ring_cache', 'w') { |f| f.write Marshal.dump(memo) }
-  elapsed
+  [n, m, elapsed.round(4)]
 end
 
 def bench
-  (1..4).each do |i|
-    (1..4).each do |j|
+  puts 'n,m,seconds'
+  (0..3).each do |i|
+    (0..3).each do |j|
       n = 10**i
       m = 10**j
-      puts [n, m, bench_n_m(n, m)].to_json
+      puts [bench_n_m(n, m)].join(',')
     end
   end
 end
