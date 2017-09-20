@@ -16,5 +16,11 @@
   * i5-6200U CPU @ 2.30GHz のLinuxラップトップ
   * elixir 1.5.1
   * erlang 20.0.1
+  * go 1.8
+
+### Elixir
 
 ![](elixir.png)
+
+### Golang
+![](go.png)
