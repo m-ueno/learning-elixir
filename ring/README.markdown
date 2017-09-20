@@ -4,6 +4,7 @@
 
     elixir ring.ex 2>/dev/null
     ruby ring.rb 2>/dev/null
+    go run ring.go
 
 ## Reference
 
