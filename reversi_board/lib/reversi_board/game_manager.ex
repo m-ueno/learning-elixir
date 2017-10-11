@@ -3,12 +3,12 @@ defmodule ReversiBoard.GameManager do
   alias ReversiBoard.Robot
   alias ReversiBoard.Stones
 
-  def update_board(board, player, color) do
+  def update_board(board, _player,  color) do
     step = Robot.make_step(board, color)
     if step == :skip do
       :skip
     else
-      Board.update(board, step)
+      Board.set_and_flip(board, step)
     end
   end
 
@@ -18,7 +18,7 @@ defmodule ReversiBoard.GameManager do
     last_board = 1..40
     |> Enum.reduce_while(init_board, fn i, board ->
       board_or_skip1 = update_board(board, p1, Stones.white)
-      board_or_skip2 = update_board(board_or_skip1, p1, Stones.white)
+      board_or_skip2 = update_board(board_or_skip1, p2, Stones.white)
       if board_or_skip1 == :skip && board_or_skip2 == :skip do
         {:halt, "both player skipped"}
       else
