@@ -63,19 +63,17 @@ defmodule ReversiBoard.Board do
   def set_and_flip(board = %Board{}, step = %Step{x: x, y: y, stone: stone}) do
     new_b = set(board, x, y, stone)
 
-    flippables = find_flippables(board, x, y, stone)
-
-    flipped_board = flippables
-      |> Enum.reduce(new_b, fn [x, y], acc ->
-        set(acc, x, y, step.stone)
-      end)
+    find_flippables(board, x, y, stone)
+    |> Enum.reduce(new_b, fn [x, y], acc ->
+      set(acc, x, y, step.stone)
+    end)
   end
 end
 
 defimpl Inspect, for: ReversiBoard.Board do
   alias ReversiBoard.Board
 
-  def inspect(board = %Board{}, opts) do
+  def inspect(board = %Board{}, _opts) do
     stones = board.board  # 1d array
     _steps = board.steps
 

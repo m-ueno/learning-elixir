@@ -39,8 +39,7 @@ defmodule ReversiBoard.GameManager do
     console_output_handler = spawn(__MODULE__, :handle_console_output, [])
     send(console_output_handler, {:clear})
 
-    # last_board = Stream.cycle(Enum.zip([Stones.white, Stones.black], [p1, p2]))
-    last_board = Enum.zip([Stones.white, Stones.black], [p1, p2])
+    Enum.zip([Stones.white, Stones.black], [p1, p2])
     |> Stream.cycle
     |> Enum.reduce_while({init_board, false}, fn {stone, player}, {board, already_skipped} ->
       board_or_skip = show_update_board(board, player, stone, console_output_handler)
