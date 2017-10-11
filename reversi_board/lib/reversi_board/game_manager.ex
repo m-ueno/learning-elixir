@@ -16,7 +16,7 @@ defmodule ReversiBoard.GameManager do
     init_board = Board.new
 
     last_board = 1..40
-    |> Enum.reduce_while(init_board, fn i, board ->
+    |> Enum.reduce_while(init_board, fn _, board ->
       board_or_skip1 = update_board(board, p1, Stones.white)
       board_or_skip2 = update_board(board_or_skip1, p2, Stones.white)
       if board_or_skip1 == :skip && board_or_skip2 == :skip do
@@ -25,5 +25,7 @@ defmodule ReversiBoard.GameManager do
         {:cont, board_or_skip2}
       end
     end)
+
+    IO.inspect(last_board)
   end
 end
