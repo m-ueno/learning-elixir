@@ -40,6 +40,6 @@ defmodule ReversiBoard.GameManager do
       end
     end)
 
-    IO.inspect(last_board)
+    send(console_output_handler, inspect(last_board))
   end
 end
