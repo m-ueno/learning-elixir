@@ -5,8 +5,16 @@ defmodule ReversiBoard.GameManager do
 
   def handle_console_output do
     receive do
-      s -> IO.write(s)
-      handle_console_output()
+      {:board, s} ->
+        IO.write(~s(\x1b[;H))
+        IO.write(s)
+        handle_console_output()
+      {:clear} ->
+        IO.write(~s(\x1b[2J))
+        handle_console_output()
+      s ->
+        IO.write(s)
+        handle_console_output()
     end
   end
 
@@ -19,8 +27,9 @@ defmodule ReversiBoard.GameManager do
     end
   end
 
-  def show_update_board(board, player, color, out_handler_pid) do
-    send(out_handler_pid, inspect(board))
+  def show_update_board(board, player, color, out_handler_pid, wait \\ 100) do
+    send(out_handler_pid, {:board, inspect(board)})
+    :timer.sleep(wait)
 
     update_board(board, player, color)
   end
@@ -28,18 +37,23 @@ defmodule ReversiBoard.GameManager do
   def run_in_console(p1 \\ %Robot{}, p2 \\ %Robot{}) do
     init_board = Board.new
     console_output_handler = spawn(__MODULE__, :handle_console_output, [])
+    send(console_output_handler, {:clear})
 
-    last_board = Stream.iterate(1, fn e -> e + 1 end)  # infinite loop
-    |> Enum.reduce_while(init_board, fn _, board ->
-      board_or_skip1 = show_update_board(board, p1, Stones.white, console_output_handler)
-      board_or_skip2 = show_update_board(board_or_skip1, p2, Stones.black, console_output_handler)
-      if board_or_skip1 == :skip && board_or_skip2 == :skip do
-        {:halt, "both player skipped"}
+    # last_board = Stream.cycle(Enum.zip([Stones.white, Stones.black], [p1, p2]))
+    last_board = Enum.zip([Stones.white, Stones.black], [p1, p2])
+    |> Stream.cycle
+    |> Enum.reduce_while({init_board, false}, fn {stone, player}, {board, already_skipped} ->
+      board_or_skip = show_update_board(board, player, stone, console_output_handler)
+
+      if board_or_skip == :skip do
+        if already_skipped do
+          {:halt, "both player skipped"}
+        else
+          {:cont, {board, true}}
+        end
       else
-        {:cont, board_or_skip2}
+        {:cont, {board_or_skip, false}}
       end
     end)
-
-    send(console_output_handler, inspect(last_board))
   end
 end
