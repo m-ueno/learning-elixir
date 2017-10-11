@@ -21,7 +21,7 @@ defmodule ReversiBoard.Board do
   end
 
   def find_flippables(board, x, y, color) do
-    :comb.cartesian_product(-1..1, -1..1)
+    Comb.cartesian_product(-1..1, -1..1)
     |> Enum.flat_map(fn [dx, dy] ->
       find_flippables_dx_dy(board, x, y, color, dx, dy)
     end)
