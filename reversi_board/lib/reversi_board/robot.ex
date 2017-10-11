@@ -29,7 +29,7 @@ defmodule ReversiBoard.Robot do
     flippables = find_flippable_cells(board, stone)
 
     if length(flippables) > 0 do
-      cell = Enum.at(flippables, 0)
+      cell = Enum.random(flippables)
       %Step{x: cell.x, y: cell.y, stone: stone}
     else
       :skip
