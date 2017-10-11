@@ -84,6 +84,6 @@ defimpl Inspect, for: ReversiBoard.Board do
     |> Enum.map(&Enum.join(&1, " "))
     |> Enum.join("\n")
 
-    s <> "\n"
+    s <> "\n\n"
   end
 end
