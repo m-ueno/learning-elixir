@@ -1,7 +1,4 @@
 defmodule ReversiBoard.Board do
-  @size 8
-  def size, do: @size
-
   defstruct board: [], steps: []
 
   # `, as...` は省略可能
@@ -10,7 +7,7 @@ defmodule ReversiBoard.Board do
   alias ReversiBoard.Stones, as: Stones
 
   def new() do
-    board = new(List.duplicate(Stones.space, @size * @size))
+    board = new(List.duplicate(Stones.space, 8 * 8))
     board = set(board, 3, 3, Stones.white)
     board = set(board, 4, 4, Stones.white)
     board = set(board, 3, 4, Stones.black)
@@ -52,11 +49,11 @@ defmodule ReversiBoard.Board do
   end
 
   def get(%Board{board: board}, x, y) do
-    Enum.at(board, x + y * @size)
+    Enum.at(board, x + y * 8)
   end
 
   def set(board = %Board{}, x, y, color) do
-    stones = List.update_at(board.board, x + y*@size, fn _ -> color end)
+    stones = List.update_at(board.board, x + y * 8, fn _ -> color end)
     new(stones)
   end
 
