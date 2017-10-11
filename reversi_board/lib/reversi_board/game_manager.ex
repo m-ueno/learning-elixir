@@ -1,5 +1,6 @@
 defmodule ReversiBoard.GameManager do
   alias ReversiBoard.Board
+  alias ReversiBoard.Playable
   alias ReversiBoard.Robot
   alias ReversiBoard.Stones
 
@@ -18,8 +19,8 @@ defmodule ReversiBoard.GameManager do
     end
   end
 
-  def update_board(board, _player,  color) do
-    step = Robot.make_step(board, color)
+  def update_board(board, player,  color) do
+    step = Playable.make_step(player, board, color)
     if step == :skip do
       :skip
     else

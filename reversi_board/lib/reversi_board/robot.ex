@@ -36,3 +36,11 @@ defmodule ReversiBoard.Robot do
     end
   end
 end
+
+defimpl ReversiBoard.Playable, for: ReversiBoard.Robot do
+  alias ReversiBoard.Robot
+
+  def make_step(%Robot{}, board, stone) do
+    Robot.make_step(board, stone)
+  end
+end
