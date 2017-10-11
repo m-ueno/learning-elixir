@@ -3,6 +3,7 @@ defmodule ReversiBoard.Robot do
 
   alias ReversiBoard.Board
   alias ReversiBoard.Cell
+  alias ReversiBoard.Stones
   alias ReversiBoard.Step
 
   # Returns []Cells
@@ -11,17 +12,27 @@ defmodule ReversiBoard.Robot do
 
     Comb.cartesian_product(range, range)
     |> Enum.filter(fn [x, y] ->
-      length(Board.find_flippables(board, x, y, stone)) > 0
+      Board.get(board, x, y) == Stones.space
+    end)
+    |> Enum.filter(fn [x, y] ->
+      # length(Board.find_flippables(board, x, y, stone)) > 0
+      f = Board.find_flippables(board, x, y, stone)
+      length(f) > 0
     end)
     |> Enum.map(fn [x, y] ->
       Cell.new(x, y)
     end)
   end
 
+  # Returns Step or :skip
   def make_step(board = %Board{}, stone) do
     flippables = find_flippable_cells(board, stone)
-    cell = Enum.at(flippables, 0)
 
-    %Step{x: cell.x, y: cell.y, stone: stone}
+    if length(flippables) > 0 do
+      cell = Enum.at(flippables, 0)
+      %Step{x: cell.x, y: cell.y, stone: stone}
+    else
+      :skip
+    end
   end
 end
