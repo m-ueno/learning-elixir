@@ -3,6 +3,7 @@ defmodule ReversiServerWeb.UserSocket do
 
   ## Channels
   channel "room:*", ReversiServerWeb.RoomChannel
+  channel "game:*", ReversiServerWeb.GameChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -19,8 +20,8 @@ defmodule ReversiServerWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"player_id" => player_id}, socket) do
+    {:ok, assign(socket, :user_id, player_id)}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
