@@ -1,12 +1,18 @@
 defmodule ReversiServer.Game do
   require Logger
   use GenServer # statefull process
-  alias ReversiBoard.{Board, Robot}
+  alias ReversiBoard.{
+    Board,
+    Robot,
+    Step,
+  }
 
   defstruct [
     id: nil,
     player1: nil,
     player2: nil,
+    board: nil,
+    already_skipped: false,
   ]
 
   # alias ReversiServer.Game.{Board}
@@ -21,13 +27,16 @@ defmodule ReversiServer.Game do
 
   def get_data(id), do: try_call(id, :get_data)
 
-  def add_step(id, step), do: nil
+  def add_step(id, x, y, stone) do
+    step = %Step{x: x, y: y, stone: stone}
+    try_call(id, {:add_step, step})
+  end
 
   # GenServer API
   ## init/1 callback
   def init(id) do
     # create game board / create event
-    {:ok, %__MODULE__{id: id, player2: %Robot{}}}
+    {:ok, %__MODULE__{id: id, board: Board.new, player2: %Robot{}}}
   end
 
   # game is `state`
@@ -39,6 +48,27 @@ defmodule ReversiServer.Game do
     game = add_player(game, %{name: player_id})
 
     {:reply, {:ok, self}, game}
+  end
+
+  def handle_call(:get_data, _from, game) do
+    {:reply, {:ok, game}, game}
+  end
+
+  def handle_call({:add_step, %Step{} = step}, _from, game) do
+    # update and automatically call robot
+    new_board_or_skip =
+      if step == :skip do
+        :skip
+      else
+        Board.set_and_flip(game.board, step)
+      end
+
+    game = case new_board_or_skip do
+      :skip -> game
+      %Board{} -> %{game | board: new_board_or_skip}
+    end
+
+    {:reply, {:ok, new_board_or_skip}, game}
   end
 
   # Generates global reference
