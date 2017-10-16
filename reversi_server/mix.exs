@@ -33,6 +33,8 @@ defmodule ReversiServer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:reversi_board, path: "../reversi_board"},
+
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.2"},
