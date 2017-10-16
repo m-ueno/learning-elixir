@@ -15,8 +15,6 @@ defmodule ReversiServer.Game do
     already_skipped: false,
   ]
 
-  # alias ReversiServer.Game.{Board}
-
   # Client API
   ## `id` is a server state
   def start_link(id) do
