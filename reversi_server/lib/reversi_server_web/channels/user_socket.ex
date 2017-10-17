@@ -21,7 +21,7 @@ defmodule ReversiServerWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(%{"player_id" => player_id}, socket) do
-    {:ok, assign(socket, :user_id, player_id)}
+    {:ok, assign(socket, :player_id, player_id)}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
