@@ -17,6 +17,11 @@ config :reversi_server, ReversiServerWeb.Endpoint,
   pubsub: [name: ReversiServer.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+config :reversi_server,
+  id_length: 8,       # Number of bytes for generic unique id
+  id_words: 2,        # Number of words used in game ids "ahoy-matey"
+  id_number_max: 9999 # Maximal number >= 100 after the words "ahoey-matey-9999".
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
