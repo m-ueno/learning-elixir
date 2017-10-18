@@ -45,15 +45,4 @@ defmodule ReversiServerWeb.GameChannel do
       {:noreply, socket}
     end
   end
-
-  def handle_in("game:joined", _message, socket) do
-    Logger.debug "Broadcasting player joined #{socket.assigns.game_id}"
-
-    player_id = socket.assigns.player_id
-    board = Board.get_opponents_data(player_id)
-
-    broadcast! socket, "game:player_joined", %{player_id: player_id, board: board}
-    {:noreply, socket}
-  end
-
 end
