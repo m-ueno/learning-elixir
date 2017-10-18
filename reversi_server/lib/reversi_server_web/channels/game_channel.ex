@@ -3,6 +3,7 @@ defmodule ReversiServerWeb.GameChannel do
   use Phoenix.Channel
 
   alias ReversiBoard.{
+    Playable,
     Step,
     Stones,
   }
@@ -28,14 +29,20 @@ defmodule ReversiServerWeb.GameChannel do
     end
   end
 
-  def handle_in("game:add_step", %{x: x, y: y, stone: stone} = message, socket) do
-    case Game.add_step(socket.game_id, x, y, stone) do
-      {:ok, game} ->
-        # Broadcast an event to all subscribers of the socket topic.
-        broadcast socket, "game:state", game
-        {:ok, %{board: new_board_or_skip}, socket}
-      {:error, reason} ->
-        {:error, %{reason: reason}}
+  def handle_in("game:add_step", %{"x" => x, "y" => y, "stone" => stone} = message, socket) do
+    game_id = socket.assigns.game_id
+    {:ok, game} = Game.add_step(game_id, x, y, stone)
+    # 1st return: Broadcast an event to all subscribers of the socket topic.
+    broadcast socket, "game:state", game
+
+    # Make computer step
+    step_or_skip = Playable.make_step(game.player2, game.board, Stones.black)
+    if %Step{x: x, y: y, stone: stone} = step_or_skip do
+      {:ok, game} = Game.add_step(game_id, x, y, stone)
+
+      # 2nd return
+      broadcast socket, "game:state", game
+      {:noreply, socket}
     end
   end
 
