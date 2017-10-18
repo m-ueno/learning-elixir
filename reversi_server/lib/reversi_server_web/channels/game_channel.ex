@@ -13,10 +13,8 @@ defmodule ReversiServerWeb.GameChannel do
   alias ReversiServer.Game.Supervisor, as: GameSupervisor
 
   def join("game:" <> game_id, _message, socket) do
-    Logger.debug "Joining Game channel #{game_id}", game_id: game_id
-
     ret = GameSupervisor.create_game(game_id)
-    Logger.debug("supervised: " <> ret)
+    Logger.debug("Spawned worker: " <> inspect(ret))
 
     player_id = socket.assigns.player_id
 
@@ -31,8 +29,6 @@ defmodule ReversiServerWeb.GameChannel do
   end
 
   def handle_in("game:add_step", %{x: x, y: y, stone: stone} = message, socket) do
-    Logger.debug("socket: ", inspect(socket))
-
     case Game.add_step(socket.game_id, x, y, stone) do
       {:ok, new_board_or_skip} ->
         # Broadcast an event to all subscribers of the socket topic.

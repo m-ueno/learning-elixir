@@ -20,7 +20,6 @@ defmodule ReversiServer.Game do
 
   # Client API
   def start_link(id) do
-    Logger.debug("Genserver start_link:", id)
     GenServer.start_link(__MODULE__, id, name: ref(id))
   end
 
@@ -35,8 +34,6 @@ defmodule ReversiServer.Game do
 
   # GenServer API
   def init(id) do
-    # create game board / create event
-    Logger.debug("Genserver initializing:", id)
     {:ok, %__MODULE__{id: id, board: Board.new, player2: %Robot{}}}
   end
 

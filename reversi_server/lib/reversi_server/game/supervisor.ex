@@ -21,7 +21,7 @@ defmodule ReversiServer.Game.Supervisor do
   Creates a new supervised Game process
   """
   def create_game(id) do
-    Logger.debug("creating: " <> id)
+    Logger.debug("Game.Supervisor -- creating: " <> id)
     Supervisor.start_child(__MODULE__, [id])
   end
 end
