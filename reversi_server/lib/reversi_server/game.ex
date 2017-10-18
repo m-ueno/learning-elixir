@@ -91,7 +91,7 @@ defmodule ReversiServer.Game do
   end
 
   # Generates global reference
-  defp ref(id), do: {:global, {:game, id}}
+  def ref(id), do: {:global, {:game, id}}
 
   defp try_call(id, msg) do
     # returns a pid of a GenServer process
