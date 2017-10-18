@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import Code from './Code.jsx';
+import Board from './components/Board.jsx';
 
 class App extends Component {
   render() {
     return (<div>
       <h1>Hello React :)</h1>
-      <Code />
-      <Code />
+      <Board cells={[]} />
     </div>);
   }
 }
