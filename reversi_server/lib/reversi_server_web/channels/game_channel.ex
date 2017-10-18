@@ -30,9 +30,9 @@ defmodule ReversiServerWeb.GameChannel do
 
   def handle_in("game:add_step", %{x: x, y: y, stone: stone} = message, socket) do
     case Game.add_step(socket.game_id, x, y, stone) do
-      {:ok, new_board_or_skip} ->
+      {:ok, game} ->
         # Broadcast an event to all subscribers of the socket topic.
-        broadcast socket, "game:update", %{board: new_board_or_skip}
+        broadcast socket, "game:state", game
         {:ok, %{board: new_board_or_skip}, socket}
       {:error, reason} ->
         {:error, %{reason: reason}}
