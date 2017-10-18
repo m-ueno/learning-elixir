@@ -16,6 +16,7 @@ defmodule ReversiServer.Application do
       supervisor(ReversiServer.Repo, []),
       # Start the endpoint when the application starts
       supervisor(ReversiServerWeb.Endpoint, []),
+      supervisor(ReversiServer.Game.Supervisor, []),
       # Start your own worker by calling: ReversiServer.Worker.start_link(arg1, arg2, arg3)
       # worker(ReversiServer.Worker, [arg1, arg2, arg3]),
     ]

@@ -5,10 +5,13 @@ defmodule ReversiServer.Game do
     Board,
     Robot,
     Step,
+    Stones,
   }
+  alias ReversiServer.RobotTask
 
   defstruct [
     id: nil,
+    turn: Stones.white,
     player1: nil,
     player2: nil,
     board: nil,
@@ -18,6 +21,7 @@ defmodule ReversiServer.Game do
   # Client API
   ## `id` is a server state
   def start_link(id) do
+    Logger.debug("Genserver start_link:", id)
     GenServer.start_link(__MODULE__, id, name: ref(id))
   end
 
@@ -34,6 +38,7 @@ defmodule ReversiServer.Game do
   ## init/1 callback
   def init(id) do
     # create game board / create event
+    Logger.debug("Genserver initializing:", id)
     {:ok, %__MODULE__{id: id, board: Board.new, player2: %Robot{}}}
   end
 
@@ -46,6 +51,22 @@ defmodule ReversiServer.Game do
     game = add_player(game, %{name: player_id})
 
     {:reply, {:ok, self}, game}
+  end
+
+  @doc """
+  - player2をspawn
+  - 盤面と手番をbroadcast
+  """
+  def handle_call(:start, _from, game) do
+    Logger.debug("Handling :start")
+
+    # Where is the right place to put this line?
+    # 攻撃される可能性があるのでGame？に回す
+    # socketにgame_idをassingする必要あり
+    task = Task.async(RobotTask, :start, [%{turn: Stones.black}])
+
+    # return just `:ok`
+    {:reply, :ok, %{game | player2: task}}
   end
 
   def handle_call(:get_data, _from, game) do
