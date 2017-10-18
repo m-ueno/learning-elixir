@@ -83,7 +83,7 @@ defmodule ReversiServer.Game do
     end
   end
 
-  defp add_player(%__MODULE__{player1: nil} = game, player) do
+  defp add_player(%__MODULE__{} = game, player) do
     %{game | player1: player}
   end
 end
