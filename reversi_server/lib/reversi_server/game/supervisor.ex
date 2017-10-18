@@ -24,4 +24,9 @@ defmodule ReversiServer.Game.Supervisor do
     Logger.debug("Game.Supervisor -- creating: " <> id)
     Supervisor.start_child(__MODULE__, [id])
   end
+
+  def destroy_game(id) do
+    pid = GenServer.whereis(Game.ref(id))
+    Supervisor.terminate_child(__MODULE__, pid)
+  end
 end

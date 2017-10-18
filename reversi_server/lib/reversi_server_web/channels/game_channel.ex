@@ -45,4 +45,20 @@ defmodule ReversiServerWeb.GameChannel do
       {:noreply, socket}
     end
   end
+
+  def terminate(reason, socket) do
+    Logger.debug "Terminating GameChannel #{socket.assigns.game_id} #{inspect reason}"
+
+    player_id = socket.assigns.player_id
+    game_id = socket.assigns.game_id
+
+    # case Game.player_left(game_id, player_id) do ...
+    GameSupervisor.destroy_game(game_id)
+
+    broadcast(socket, "game:over", %{game: "over"})
+    broadcast(socket, "game:player_left", %{player_id: player_id})
+
+    :ok
+  end
+
 end
