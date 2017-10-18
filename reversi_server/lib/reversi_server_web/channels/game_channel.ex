@@ -21,8 +21,8 @@ defmodule ReversiServerWeb.GameChannel do
     case Game.join(game_id, player_id, socket.channel_pid) do
       {:ok, pid} ->
         Process.monitor(pid)
-        {:ok, game_state} = Game.get_data(game_id)
-        {:ok, game_state, assign(socket, :game_id, game_id)}
+        {:ok, game} = Game.get_data(game_id)
+        {:ok, game, assign(socket, :game_id, game_id)}
       {:error, reason} ->
         {:error, %{reason: reason}}
     end
