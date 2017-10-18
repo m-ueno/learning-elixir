@@ -56,20 +56,20 @@ defmodule ReversiServer.Game do
   end
 
   def handle_call({:add_step, %Step{} = step}, _from, game) do
-    # update and automatically call robot
     new_board_or_skip =
-      if step == :skip do
+      if step.stone == :skip do
         :skip
       else
         Board.set_and_flip(game.board, step)
       end
 
+    # update state (or not when skipped)
     game = case new_board_or_skip do
       :skip -> game
       %Board{} -> %{game | board: new_board_or_skip}
     end
 
-    {:reply, {:ok, new_board_or_skip}, game}
+    {:reply, {:ok, game}, game}
   end
 
   # Generates global reference
