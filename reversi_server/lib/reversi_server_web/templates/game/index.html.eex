@@ -1,0 +1,18 @@
+<script>window.player_id = "<%= assigns[:player_id] %>";</script>
+<div class="jumbotron">
+  <h2><%= gettext "Welcome to %{name}!", name: "reversi" %></h2>
+  <p class="lead">A productive web framework that<br />does not compromise speed and maintainability.</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-6">
+  </div>
+  <div class="col-lg-6">
+</div>
+
+<div class="row">
+  <div class="col-lg-6">
+  </div>
+  <div class="col-lg-6">
+  </div>
+</div>
