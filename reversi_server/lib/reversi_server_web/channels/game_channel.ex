@@ -29,7 +29,7 @@ defmodule ReversiServerWeb.GameChannel do
     end
   end
 
-  @doc "Spawn robot task"
+  @doc "Start Game worker via GameSupervisor"
   def handle_in("game:start", _message, socket) do
     Logger.debug("Starting new game", game_id: socket.game_id)
 
