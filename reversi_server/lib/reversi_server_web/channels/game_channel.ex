@@ -30,19 +30,6 @@ defmodule ReversiServerWeb.GameChannel do
     end
   end
 
-  @doc "Start Game worker via GameSupervisor"
-  def handle_in("game:start", _message, socket) do
-    Logger.debug("Starting new game", game_id: socket.game_id)
-
-    case Game.start do
-      {:ok, board} ->
-        {:ok, %{board: board}, socket}
-      other ->
-        IO.inspect(other)
-        {:error, %{reason: other}}
-    end
-  end
-
   def handle_in("game:add_step", %{x: x, y: y, stone: stone} = message, socket) do
     Logger.debug("socket: ", inspect(socket))
 
