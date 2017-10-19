@@ -1,6 +1,6 @@
 import C from './constants';
 
-function updateLocalState(cells) {
+function updateLocalState({cells}) {
   return ({
     type: C.BOARD_UPDATED,
     cells,
@@ -14,12 +14,13 @@ function updateRemoteState(x, y, stone) {
   });
 }
 
-function channelJoined({ gameID, turn, cells }) {
+function channelJoined({ gameID, turn, cells, channel }) {
   return ({
     type: C.CHANNEL_JOINED,
     gameID,
     turn,
-    cells
+    cells,
+    channel,
   });
 }
 
@@ -27,11 +28,11 @@ export function joinChannel({ gameID }) {
   return ({ socket, dispatch }) => {
     const topic = `game:${gameID}`;
     const channel = socket.channel(topic, {});
-    channel.on('game:state', board => {
+    channel.on('game:state', game => {
 
-      console.log('Handling event game:state', board);
+      console.log('Handling event game:state', game);
 
-      dispatch(updateLocalState({cells: board.board}));
+      dispatch(updateLocalState({cells: game.board.board}));
     });
     channel
       .join()
@@ -41,6 +42,7 @@ export function joinChannel({ gameID }) {
           gameID: resp.id,
           turn: resp.turn,
           cells: resp.board.board,
+          channel,
         }));
       })
       .receive('error', ({reason}) => console.log('ws receive error:', reason))
@@ -48,12 +50,13 @@ export function joinChannel({ gameID }) {
   }
 }
 
-export function sendHandToGameChannel({gameID, x, y, stone}) {
-  return ({ socket, dispatch }) => {
+export function sendHandToGameChannel({x, y}) {
+  return ({ socket, dispatch, getState }) => {
+    const {gameID, myStone, channel} = getState();
+    console.log("sendHandToGame:", gameID, myStone, channel);
     const topic = `game:${gameID}`;
-    const channel = socket.channel(topic, {});
     channel
-      .push('add_step', {})
+      .push('game:add_step', {x: x, y: y, stone: myStone})
       .receive('ok', _ => dispatch({
         type: 'hand sent',
       }))

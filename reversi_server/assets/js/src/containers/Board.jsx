@@ -1,8 +1,17 @@
 import { connect } from 'react-redux'
 
+import {sendHandToGameChannel} from '../redux/actions';
 import PureBoard from '../components/Board.jsx';
 
-const mapStateToProps = (state) => ({cells: state.cells});
+const mapDispatchToState = (dispatch) => ({
+  handleCellClick: ({x, y}) => {
+    dispatch(sendHandToGameChannel({x, y}))
+  },
+});
 
-const Board = connect(mapStateToProps)(PureBoard);
+const mapStateToProps = (state) => ({
+  cells: state.cells,
+});
+
+const Board = connect(mapStateToProps, mapDispatchToState)(PureBoard);
 export default Board;
