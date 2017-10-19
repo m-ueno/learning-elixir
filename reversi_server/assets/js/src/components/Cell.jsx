@@ -14,18 +14,10 @@ const Cell = ({stone, handleClick}) => {
       fontSize: '80px',
       margin: '5px',
       textAlign: 'center',
-      padding: '0px 0',
-
       backgroundColor: '#fee',
-
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'contain',
-      backgroundPosition: 'center',
-      backgroundSize: 'contain',
     },
     [C.STONE_WHITE]: {
       color: '#5bc0de',
-      // backgroundImage: 'url(https://pbs.twimg.com/profile_images/759427015967584256/Mf9no0pv.jpg)',
     },
     [C.STONE_BLACK]: {
       color: '#d9534f',

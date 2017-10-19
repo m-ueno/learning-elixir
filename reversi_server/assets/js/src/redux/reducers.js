@@ -10,7 +10,7 @@ const initialState = {
 
 export default function reversiClient(state = initialState, action) {
 
-  console.log('reducer head:', state, action);
+  console.log('Reducing action:', state, action);
 
   switch (action.type) {
     case C.CHANNEL_JOINED:

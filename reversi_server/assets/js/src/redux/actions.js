@@ -29,15 +29,12 @@ export function joinChannel({ gameID }) {
     const topic = `game:${gameID}`;
     const channel = socket.channel(topic, {});
     channel.on('game:state', game => {
-
-      console.log('Handling event game:state', game);
-
       dispatch(updateLocalState({cells: game.board.board}));
     });
     channel
       .join()
       .receive('ok', resp => {
-        console.log('resp ok:', resp, socket);
+        console.log('channel joined:', resp, socket);
         dispatch(channelJoined({
           gameID: resp.id,
           turn: resp.turn,
@@ -53,7 +50,6 @@ export function joinChannel({ gameID }) {
 export function sendHandToGameChannel({x, y}) {
   return ({ socket, dispatch, getState }) => {
     const {gameID, myStone, channel} = getState();
-    console.log("sendHandToGame:", gameID, myStone, channel);
     const topic = `game:${gameID}`;
     channel
       .push('game:add_step', {x: x, y: y, stone: myStone})

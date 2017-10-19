@@ -19,7 +19,6 @@ const Board = ({cells, handleCellClick}) => {
     )}
     </tr>
   );
-  console.log(xy);
 
   return (<div>
     <h2>Board</h2>
