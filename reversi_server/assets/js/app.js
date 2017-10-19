@@ -9,10 +9,12 @@ import createSocketMiddleware from 'redux-ws';
 
 import reducer from './src/redux/reducers';
 import App from './src/App.jsx';
+import socket from './src/socket';
 
+const socketMiddleware = createSocketMiddleware(socket);
 const store = createStore(
   reducer,
-  // applyMiddleware(createSocketMiddleware)
+  applyMiddleware(socketMiddleware),
 );
 
 ReactDOM.render(

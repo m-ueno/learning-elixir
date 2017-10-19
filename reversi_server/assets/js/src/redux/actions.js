@@ -13,3 +13,23 @@ function updateRemoteState(x, y, stone) {
     x, y, stone,
   });
 }
+
+function channelJoined({ gameID }) {
+  return ({
+    type: C.CHANNEL_JOINED,
+    gameID,
+  });
+}
+
+export function joinChannel({ gameID }) {
+  return ({ socket, dispatch }) => {
+    const channel = `game:${gameID}`;
+    socket
+      .channel(channel, {})
+      .join()
+      .receive('ok', resp => {
+        console.log('resp ok:', resp);
+        dispatch(channelJoined({ gameID: socket.game_id }));
+      })
+  }
+}
