@@ -4,6 +4,7 @@ const C = {
   STONE_SPACE: 2,
   BOARD_UPDATED: 'board_updated',
   CHANNEL_JOINED: 'channel_joined',
+  SEND_HAND: 'send_hand',
 };
 
 export default C;

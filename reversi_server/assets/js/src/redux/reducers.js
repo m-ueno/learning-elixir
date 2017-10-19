@@ -12,7 +12,8 @@ export default function reversiClient(state = initialState, action) {
 
   switch (action.type) {
     case C.CHANNEL_JOINED:
-      return { ...state, gameID: action.gameID };
+      const { gameID, turn, cells } = action;
+      return { ...state, gameID, turn, cells};
     case C.BOARD_UPDATED:
       return ({ ...state, cells: action.cells });
     default:
