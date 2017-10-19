@@ -9,7 +9,12 @@ const Board = ({cells, handleCellClick}) => {
     <tr key={y}>
     {range.map(x =>
       <td key={y*8+x}>
-        <Cell x={x} y={y} handleClick={() => handleCellClick({x: x, y: y})}>{cells[y * 8 + x]}</Cell>
+        <Cell
+          x={x}
+          y={y}
+          stone={cells[y * 8 + x]}
+          handleClick={() => handleCellClick({x: x, y: y})}
+        />
       </td>
     )}
     </tr>
