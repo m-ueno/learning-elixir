@@ -12,5 +12,12 @@
     "**/.DS_Store": true,
     "priv/": true,
     "_build/": true
-  }
+  },
+  "move-imports.excludeGlobs": [
+    "node_modules",
+    ","
+  ],
+  "move-imports.extensions": [
+    "jsx"
+  ]
 }
