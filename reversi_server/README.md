@@ -23,62 +23,37 @@ Ready to run in production? Please [check our deployment guides](http://www.phoe
 
 ```mermaid
 sequenceDiagram
-participant C2 as ObserverClient
+# participant C2 as ObserverClient
 participant Client
-participant Channel as handler Fns for "game:game_id"
+participant Channel as GameChannel
 participant Game
 participant Supervisor as GameSupervisor
 participant Logic as ReversiLogic
 
-Client ->> Channel : join(game_id)
+Client ->> +Channel : join(game_id)
 Channel ->> Supervisor : start_child
-Supervisor -->> Game : start_child(game_id)
+Supervisor ->> +Game : start_child(game_id)
 Game ->> Game : GenServer.start_link(game_id)
-Supervisor ->> Channel : {:ok, _game_pid}
-Channel ->> Client : created
+Game ->> Supervisor : {:ok, pid}
+Supervisor ->> Channel : {:ok, child}
+Channel -->> Game : Process.monitor(game_pid)
+Channel ->> Client : joined
 
-Client ->> Channel : make_step
-Channel -->> Game :  (Process.whereis/1で探す)
-Channel ->> Game : update_state
-Game ->> Channel : new_state
-Channel -->> Client : broadcast(update)
-Channel ->> Logic : _
-Logic ->> Channel : step
-Channel ->> Game : update_state
-Game ->> Channel : new_state
-Channel -->> Client : broadcast(update)
+loop until game over
+  Client ->> Channel : add_step(game_id)
 
-C2 ->> Channel : join
-Channel -->> C2 : state
-```
+  # turn 1
+  Channel ->> Game : add_step(game_id)
+  Game ->> Game : GenServer.whereis/1
+  Game ->> Game : add_step
+  Game ->> Channel : new_state
+  Channel -->> Client : "state_updated" (broadcast)
 
-### Another way of communication: pub/sub channel internally
-
-See <https://hexdocs.pm/phoenix/Phoenix.Channel.html#module-subscribing-to-external-topics>
-
-```mermaid
-sequenceDiagram
-
-  participant Client
-  participant Web
-  participant Game as GameStatefulServerProc
-  participant Worker?
-
-Client -->> Web : join(gid, player_id)
-Web -->> Game : init(gid, player_id, channel_pid)
-Game -->> Worker? : spawn(channel_pid)
-Worker? -->> Game: join
-
-Game -->> Client : broadcast（observerできないのか？？）
-
-Client -->> Web : gid, @step
-Web -->> Game : gid, @step
-Game -->> Game : check/update
-Game -->> Client : broadcast
-Game -->> Worker? : broadcast
-
-Worker? -->> Game : @step
-Game -->> Game : check/update
-Game -->> Client : broadcast
-Game -->> Worker? : broadcast
+  # turn 2
+  Channel ->> Logic : Playable.make_step(...)
+  Logic ->> Channel : step
+  Channel ->> Game : add_step
+  Game ->> -Channel : new_state
+  Channel -->> -Client : "state_updated" (broadcast)
+end
 ```
