@@ -20,14 +20,14 @@ defmodule ReversiBoard.Board do
   end
 
   def find_flippables(%Board{} = board, x, y, color) do
-    Comb.cartesian_product(-1..1, -1..1)
-    |> Enum.flat_map(fn [dx, dy] ->
+    for dx <- -1..1, dy <- -1..1 do
       if {dx, dy} == {0, 0} do
         []
       else
         find_flippables_dx_dy(board, x+dx, y+dy, color, dx, dy)
       end
-    end)
+    end
+    |> List.foldr([], fn x, acc -> acc ++ x end)
   end
 
   # Returns []Cell, not including the first stone

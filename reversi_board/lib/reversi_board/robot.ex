@@ -10,7 +10,9 @@ defmodule ReversiBoard.Robot do
   defp find_flippable_cells(%Board{} = board, stone) do
     range = 0..7
 
-    Comb.cartesian_product(range, range)
+    for x <- range, y <- range do
+      [x, y]
+    end
     |> Enum.filter(fn [x, y] ->
       Board.get(board, x, y) == Stones.space
     end)
