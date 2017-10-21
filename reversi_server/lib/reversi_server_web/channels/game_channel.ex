@@ -37,6 +37,8 @@ defmodule ReversiServerWeb.GameChannel do
 
     # Make computer step
     step_or_skip = Playable.make_step(game.player2, game.board, Stones.black)
+    :timer.sleep(500)
+
     if %Step{x: x, y: y, stone: stone} = step_or_skip do
       {:ok, game} = Game.add_step(game_id, x, y, stone)
 
