@@ -19,19 +19,19 @@ defmodule ReversiBoard.Board do
     %__MODULE__{board: board}
   end
 
-  def find_flippables(board = %Board{}, x, y, color) do
-    Comb.cartesian_product(-1..1, -1..1)
-    |> Enum.flat_map(fn [dx, dy] ->
+  def find_flippables(%Board{} = board, x, y, color) do
+    for dx <- -1..1, dy <- -1..1 do
       if {dx, dy} == {0, 0} do
         []
       else
         find_flippables_dx_dy(board, x+dx, y+dy, color, dx, dy)
       end
-    end)
+    end
+    |> List.foldr([], fn x, acc -> acc ++ x end)
   end
 
   # Returns []Cell, not including the first stone
-  def find_flippables_dx_dy(board = %Board{}, x, y, color, dx, dy, acc \\ []) do
+  def find_flippables_dx_dy(%Board{} = board, x, y, color, dx, dy, acc \\ []) do
     {nx, ny} = {x+dx, y+dy}
 
     cond do
@@ -52,12 +52,12 @@ defmodule ReversiBoard.Board do
     Enum.at(board, x + y * 8)
   end
 
-  def set(board = %Board{}, x, y, color) do
+  def set(%Board{} = board, x, y, color) do
     stones = List.update_at(board.board, x + y * 8, fn _ -> color end)
     new(stones)
   end
 
-  def set_and_flip(board = %Board{}, step = %Step{x: x, y: y, stone: stone}) do
+  def set_and_flip(%Board{} = board, %Step{x: x, y: y, stone: stone} = step) do
     new_b = set(board, x, y, stone)
 
     find_flippables(board, x, y, stone)
@@ -70,7 +70,7 @@ end
 defimpl Inspect, for: ReversiBoard.Board do
   alias ReversiBoard.Board
 
-  def inspect(board = %Board{}, _opts) do
+  def inspect(%Board{} = board, _opts) do
     stones = board.board  # 1d array
     _steps = board.steps
 
