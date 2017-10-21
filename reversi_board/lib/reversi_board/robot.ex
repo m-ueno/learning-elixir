@@ -7,7 +7,7 @@ defmodule ReversiBoard.Robot do
   alias ReversiBoard.Step
 
   # Returns []Cells
-  defp find_flippable_cells(%Board{} = board, stone) do
+  def find_flippable_cells(%Board{} = board, stone) do
     range = 0..7
 
     for x <- range, y <- range do
