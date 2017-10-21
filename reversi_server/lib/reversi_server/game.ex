@@ -53,17 +53,23 @@ defmodule ReversiServer.Game do
   end
 
   def handle_call({:add_step, %Step{} = step}, _from, game) do
-    new_board_or_skip =
+    { new_board_or_skip, new_turn } =
       if step.stone == :skip do
-        :skip
+        {
+          :skip,
+          game.turn,
+        }
       else
-        Board.set_and_flip(game.board, step)
+        {
+          Board.set_and_flip(game.board, step),
+          step.stone,
+        }
       end
 
     # update state (or not when skipped)
     game = case new_board_or_skip do
       :skip -> game
-      %Board{} -> %{game | board: new_board_or_skip}
+      %Board{} -> %{game | board: new_board_or_skip, turn: new_turn}
     end
 
     {:reply, {:ok, game}, game}
