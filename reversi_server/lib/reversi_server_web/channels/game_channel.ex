@@ -32,20 +32,24 @@ defmodule ReversiServerWeb.GameChannel do
   def handle_in("game:add_step", %{"x" => x, "y" => y, "stone" => stone} = message, socket) do
     game_id = socket.assigns.game_id
     {:ok, game} = Game.add_step(game_id, x, y, stone)
-    # 1st return: Broadcast an event to all subscribers of the socket topic.
+
+    # 1st broadcast
+    # Broadcast an event to all subscribers of the socket topic.
     broadcast socket, "game:state", game
 
     # Make computer step
     step_or_skip = Playable.make_step(game.player2, game.board, Stones.black)
     :timer.sleep(500)
 
-    if %Step{x: x, y: y, stone: stone} = step_or_skip do
-      {:ok, game} = Game.add_step(game_id, x, y, stone)
+    case step_or_skip do
+      %Step{x: x, y: y, stone: stone} ->
+        {:ok, game} = Game.add_step(game_id, x, y, stone)
 
-      # 2nd return
-      broadcast socket, "game:state", game
-      {:noreply, socket}
+        # 2nd broadcast
+        broadcast socket, "game:state", game
     end
+
+    {:noreply, socket}
   end
 
   def terminate(reason, socket) do
