@@ -7,7 +7,7 @@ defmodule ReversiBoard.Robot do
   alias ReversiBoard.Step
 
   # Returns []Cells
-  defp find_flippable_cells(board = %Board{}, stone) do
+  defp find_flippable_cells(%Board{} = board, stone) do
     range = 0..7
 
     Comb.cartesian_product(range, range)
@@ -25,7 +25,7 @@ defmodule ReversiBoard.Robot do
   end
 
   # Returns Step or :skip
-  def make_step(board = %Board{}, stone) do
+  def make_step(%Board{} = board, stone) do
     flippables = find_flippable_cells(board, stone)
 
     if length(flippables) > 0 do
