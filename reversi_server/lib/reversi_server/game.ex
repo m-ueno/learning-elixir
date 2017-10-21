@@ -16,6 +16,7 @@ defmodule ReversiServer.Game do
     player2: nil,
     board: nil,
     already_skipped: false,
+    game_is_over: false,
   ]
 
   # Client API
@@ -53,24 +54,35 @@ defmodule ReversiServer.Game do
   end
 
   def handle_call({:add_step, %Step{} = step}, _from, game) do
-    { new_board_or_skip, new_turn } =
-      if step.stone == :skip do
-        {
-          :skip,
-          game.turn,
-        }
-      else
-        {
-          Board.set_and_flip(game.board, step),
-          step.stone,
-        }
-      end
-
-    # update state (or not when skipped)
-    game = case new_board_or_skip do
-      :skip -> game
-      %Board{} -> %{game | board: new_board_or_skip, turn: new_turn}
+    {
+      new_board,
+      new_turn,
+      already_skipped,
+      game_is_over,
+    } = if step.stone == :skip do
+      over = if game.already_skipped, do: true, else: false
+      {
+        game.board,
+        game.turn,
+        true,
+        over
+      }
+    else
+      next_turn = if game.turn == Stones.white, do: Stones.black, else: Stones.white
+      {
+        Board.set_and_flip(game.board, step),
+        next_turn,
+        false,
+        false,
+      }
     end
+
+    game = %{game |
+      board: new_board,
+      turn: new_turn,
+      already_skipped: already_skipped,
+      game_is_over: game_is_over,
+    }
 
     {:reply, {:ok, game}, game}
   end
