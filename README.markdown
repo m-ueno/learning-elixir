@@ -7,3 +7,7 @@
 ## reversi_board
 
 コマンドラインのリバーシです. コンピュータ同士の対戦を眺めることができます
+
+## reversi_server
+
+`reversi_board` のウェブアプリです
