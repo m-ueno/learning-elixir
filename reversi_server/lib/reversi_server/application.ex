@@ -1,7 +1,5 @@
 defmodule ReversiServer.Application do
   @id_length Application.get_env(:reversi_server, :id_length)
-  @id_words Application.get_env(:reversi_server, :id_words)
-  @id_number_max Application.get_env(:reversi_server, :id_number_max)
 
   use Application
 
@@ -43,12 +41,5 @@ defmodule ReversiServer.Application do
     |> :crypto.strong_rand_bytes
     |> Base.url_encode64()
     |> binary_part(0, @id_length)
-  end
-
-  @doc """
-  Generates unique id for the game
-  """
-  def generate_game_id do
-    Battleship.Pirate.generate_id(@id_words, @id_number_max)
   end
 end

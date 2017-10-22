@@ -17,8 +17,7 @@ defmodule ReversiServerWeb.Router do
   scope "/", ReversiServerWeb do
     pipe_through :browser # Use the default browser stack
 
-    get "/", PageController, :index
-    get "/game", GameController, :index
+    get "/", GameController, :index
   end
 
   defp put_user_token(conn, _) do
