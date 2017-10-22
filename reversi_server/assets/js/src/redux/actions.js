@@ -7,6 +7,13 @@ function updateLocalState({cells}) {
   });
 }
 
+function updateAllGameState({ games }) {
+  return ({
+    type: C.ALL_GAMES_UPDATED,
+    games: games,
+  });
+}
+
 function updateRemoteState(x, y, stone) {
   return ({
     type: C.MAKE_STEP,
@@ -56,5 +63,22 @@ export function sendHandToGameChannel({x, y}) {
       .receive('ok', _ => dispatch({
         type: 'hand sent',
       }))
+  }
+}
+
+export function joinAdminChannel() {
+  return ({ socket, dispatch }) => {
+    const topic = 'admin:monitor';
+    const channel = socket.channel(topic, {});
+    channel.on('all_game_state', message => {
+      dispatch(updateAllGameState({ games: message.games }));
+    });
+    channel
+      .join()
+      .receive('ok', resp => {
+        console.log('channel joined:', resp, socket);
+      })
+      .receive('error', ({reason}) => console.log('ws receive error:', reason))
+      ;
   }
 }
