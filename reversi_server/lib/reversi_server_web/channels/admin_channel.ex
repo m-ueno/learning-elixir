@@ -10,9 +10,7 @@ defmodule ReversiServerWeb.AdminChannel do
   def join("admin:monitor", _message, socket) do
     _player_id = socket.assigns.player_id
 
-    Logger.info("all games: " <> inspect(all_game_state))
-
-    send(self, :after_join)
+    send(self(), :after_join)
 
     {:ok, socket}
   end
@@ -32,12 +30,12 @@ defmodule ReversiServerWeb.AdminChannel do
   end
 
   def push_state_loop(socket) do
-    push socket, "all_game_state", %{games: all_game_state}
+    push socket, "all_game_state", %{games: all_game_state()}
     :timer.sleep(2000)
     push_state_loop(socket)
   end
 
-  def terminate(reason, socket) do
+  def terminate(_reason, _socket) do
     :ok
   end
 end

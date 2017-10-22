@@ -7,7 +7,6 @@ defmodule ReversiServer.Game do
     Step,
     Stones,
   }
-  alias ReversiServer.RobotTask
 
   defstruct [
     id: nil,
@@ -40,13 +39,12 @@ defmodule ReversiServer.Game do
 
   # game is `state`
   ## handle_call/3 コールバック: {:atom, from_pid, state} -> {:reply, value, new_state}
-  def handle_call({:join, player_id, pid}, _from, game) do
+  def handle_call({:join, player_id, _pid}, _from, game) do
     Logger.debug "Handling :join for #{player_id} in Game #{game.id}"
 
-    b = %Board{}
     game = add_player(game, %{name: player_id})
 
-    {:reply, {:ok, self}, game}
+    {:reply, {:ok, self()}, game}
   end
 
   def handle_call(:get_data, _from, game) do

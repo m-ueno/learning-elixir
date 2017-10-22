@@ -9,7 +9,6 @@ defmodule ReversiServerWeb.GameChannel do
   }
   alias ReversiServer.{
     Game,
-    RobotTask,
   }
   alias ReversiServer.Game.Supervisor, as: GameSupervisor
 
@@ -29,7 +28,7 @@ defmodule ReversiServerWeb.GameChannel do
     end
   end
 
-  def handle_in("game:add_step", %{"x" => x, "y" => y, "stone" => stone} = message, socket) do
+  def handle_in("game:add_step", %{"x" => x, "y" => y, "stone" => stone} = _message, socket) do
     game_id = socket.assigns.game_id
     {:ok, game} = Game.add_step(game_id, x, y, stone)
 
