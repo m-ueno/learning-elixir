@@ -3,7 +3,7 @@
 // Render the top-level React component
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import { compose, createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import createSocketMiddleware from 'redux-ws';
 import thunk from 'redux-thunk';
@@ -12,10 +12,12 @@ import reducer from './src/redux/reducers';
 import App from './src/App.jsx';
 import socket from './src/socket';
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const socketMiddleware = createSocketMiddleware(socket);
 const store = createStore(
   reducer,
-  applyMiddleware(socketMiddleware, thunk),
+  composeEnhancers(applyMiddleware(socketMiddleware, thunk)),
 );
 
 ReactDOM.render(
