@@ -57,3 +57,20 @@ loop until game over
   Channel -->> -Client : "state_updated" (broadcast)
 end
 ```
+
+```mermaid
+sequenceDiagram
+
+participant Admin
+participant Channel as AdminChannel
+
+Admin ->> Channel : join
+
+loop do
+  Channel ->> Supervisor : children_id
+  Supervisor ->> Channel : @children_id
+  Channel ->> Game : List.map Game.get_data(@id)
+  Game ->> Channel : @game
+  Channel -->> Admin : {"games: [@game]}
+end
+```
