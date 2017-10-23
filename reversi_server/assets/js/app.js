@@ -9,7 +9,7 @@ import createSocketMiddleware from 'redux-ws';
 import thunk from 'redux-thunk';
 
 import reducer from './src/redux/reducers';
-import App from './src/containers/App.jsx';
+import Root from './src/containers/Root.jsx';
 import socket from './src/socket';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -21,8 +21,6 @@ const store = createStore(
 );
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <Root store={store} />,
   document.getElementById('react-root')
 );
