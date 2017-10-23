@@ -1,12 +1,15 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import HomeIndexView from '../views/home';
+import AdminIndexView from '../views/admin';
 
 export default function configRoutes() {
   return (
     <Switch>
-      <Route path="/" component={HomeIndexView} />
+      <Route exact path="/" component={HomeIndexView} />
+      <Route exact path="/admin" component={AdminIndexView} />
+      <Redirect from="*" to="/" />
       {/* <Route path="/game/:id" component={GameShowView} />
       <Route path="/not_found" component={NotFoundView} />
       <Route path="/game_error" component={GameErrorView} />
