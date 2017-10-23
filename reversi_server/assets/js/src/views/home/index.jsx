@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import Board from './containers/Board.jsx';
-import JoinButton from './containers/JoinButton.jsx';
-import AdminButton from './containers/AdminButton.jsx';
-import BoardGrid from './containers/BoardGrid.jsx';
+import React, { Component } from 'react';
+import Board from '../../containers/Board.jsx';
+import JoinButton from '../../containers/JoinButton.jsx';
+import AdminButton from '../../containers/AdminButton.jsx';
+import BoardGrid from '../../containers/BoardGrid.jsx';
 
-class App extends Component {
+class HomeIndexView extends Component {
   render() {
     return (<div>
       <JoinButton value="Join 'room1'" gameID="1" />
@@ -19,4 +19,4 @@ class App extends Component {
     </div>);
   }
 }
-export default App;
+export default HomeIndexView;

@@ -9,7 +9,7 @@ import createSocketMiddleware from 'redux-ws';
 import thunk from 'redux-thunk';
 
 import reducer from './src/redux/reducers';
-import App from './src/App.jsx';
+import App from './src/containers/App.jsx';
 import socket from './src/socket';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
