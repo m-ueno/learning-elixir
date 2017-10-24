@@ -14,13 +14,6 @@ function updateAllGameState({ games }) {
   });
 }
 
-function updateRemoteState(x, y, stone) {
-  return ({
-    type: C.MAKE_STEP,
-    x, y, stone,
-  });
-}
-
 function channelJoined({ gameID, turn, cells, channel }) {
   return ({
     type: C.CHANNEL_JOINED,

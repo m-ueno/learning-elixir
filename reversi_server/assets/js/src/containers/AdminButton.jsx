@@ -5,7 +5,7 @@ import Button from '../components/Button.jsx';
 
 const mapDispatchToProps = (dispatch, _ownProps) => ({
   handleClick: () => dispatch(joinAdminChannel()),
-  value: "Join Admin channel",
+  value: 'Join Admin channel',
 });
 
 const AdminButton = connect(null, mapDispatchToProps)(Button);

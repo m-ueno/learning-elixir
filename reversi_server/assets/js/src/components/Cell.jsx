@@ -25,7 +25,7 @@ const Cell = ({stone, handleClick}) => {
   };
 
   const style = Object.assign({}, styles.base, styles[stone]);
-  const char = (stone === C.STONE_SPACE ? null : "●");
+  const char = (stone === C.STONE_SPACE ? null : '●');
 
   return <div style={style} onClick={handleClick}>{char}</div>;
 }
