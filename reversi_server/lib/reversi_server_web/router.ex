@@ -18,6 +18,9 @@ defmodule ReversiServerWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", GameController, :index
+
+    # You will find the paths inside conn.params["path"] or as conn.path_info.
+    get "/*path", GameController, :index
   end
 
   defp put_user_token(conn, _) do
