@@ -1,6 +1,6 @@
 import C from './constants';
 
-function updateLocalState({cells}) {
+export function updateLocalState({cells}) {
   return ({
     type: C.BOARD_UPDATED,
     cells,
@@ -14,17 +14,24 @@ function updateAllGameState({ games }) {
   });
 }
 
-function channelJoined({ gameID, turn, cells, channel }) {
-  return ({
-    type: C.CHANNEL_JOINED,
-    gameID,
-    turn,
-    cells,
-    channel,
-  });
-}
+export const channelJoined = ({ gameID, turn, cells, channel }) => ({
+  type: C.CHANNEL_JOINED,
+  gameID,
+  turn,
+  cells,
+  channel,
+});
 
-export function joinChannel({ gameID }) {
+export const channelLeft = () => ({
+  type: C.CHANNEL_LEFT
+});
+
+export const joinChannel = ({ gameID }) => ({
+  type: C.CHANNEL_JOIN,
+  gameID,
+});
+
+export function joinChannelOld({ gameID }) {
   return ({ socket, dispatch }) => {
     const topic = `game:${gameID}`;
     const channel = socket.channel(topic, {});
@@ -47,7 +54,11 @@ export function joinChannel({ gameID }) {
   }
 }
 
-export function sendHandToGameChannel({x, y}) {
+export const sendHandToGameChannel = ({ x, y }) => ({
+  type: C.SEND_HAND, x, y,
+});
+
+export function sendHandToGameChannelOLD({x, y}) {
   return ({ socket, dispatch, getState }) => {
     const {gameID, myStone, channel} = getState();
     const topic = `game:${gameID}`;
