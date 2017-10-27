@@ -20,10 +20,7 @@ const Board = ({cells, handleCellClick}) => {
     </tr>
   );
 
-  return (<div>
-    <h2>Board</h2>
-    <table><tbody>{xy}</tbody></table>
-  </div>);
+  return <table><tbody>{xy}</tbody></table>;
 }
 Board.propTypes = {
   cells: PropTypes.array.isRequired,
