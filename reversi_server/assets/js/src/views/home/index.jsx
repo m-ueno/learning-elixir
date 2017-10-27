@@ -1,16 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import Board from '../../containers/Board.jsx';
 import JoinButton from '../../containers/JoinButton.jsx';
 
-class HomeIndexView extends Component {
-  render() {
-    return (<div>
-      <JoinButton value="Join 'room1'" gameID="1" />
-      <JoinButton value="Join 'room2'" gameID="2" />
-      <JoinButton value="Join 'room3'" gameID="3" />
-      <Board />
-    </div>);
-  }
+const HomeIndexView = ({ isInLobby }) => {
+  const buttons = [1, 2, 3].map(n =>
+    <JoinButton key={n} value={`Join ROOM${n}`} gameID={`${n}`} />
+  );
+  return (
+      isInLobby
+        ? buttons
+        : [
+            <JoinButton key="leave" value="Leave room" gameID="0" />,
+            <Board key="board" />
+          ]
+  );
 }
-export default HomeIndexView;
+
+const mapStateToProps = state => ({
+  isInLobby: state.gameID == '0',
+});
+
+export default connect(mapStateToProps)(HomeIndexView);
