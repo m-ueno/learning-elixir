@@ -1,4 +1,4 @@
-const C = {
+export default {
   STONE_WHITE: 'O',
   STONE_BLACK: 'X',
   STONE_SPACE: '_',
@@ -17,5 +17,3 @@ const C = {
   EVENT_ADD_STEP: 'game:add_step',
 
 };
-
-export default C;

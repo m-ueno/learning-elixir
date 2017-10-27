@@ -90,7 +90,7 @@ const socketMiddleware = (function () {
         next(dispatch =>
           channel
             .push(C.EVENT_ADD_STEP, { x, y, stone })
-            .receive('ok', _ => store.dispatch({
+            .receive('ok', _ => dispatch({
               type: 'hand sent',
             }))
         );
