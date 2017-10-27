@@ -1,7 +1,7 @@
 import C from './constants';
 
 const initialState = {
-  gameID: 0,
+  gameID: '0',
   turn: C.STONE_WHITE,
   myStone: C.STONE_WHITE,
   cells: Array.from(Array(64)).map(_ => C.STONE_SPACE),
