@@ -7,7 +7,7 @@ export function updateLocalState({cells}) {
   });
 }
 
-function updateAllGameState({ games }) {
+export function updateAllGameState({ games }) {
   return ({
     type: C.ALL_GAMES_UPDATED,
     games: games,
@@ -70,7 +70,10 @@ export function sendHandToGameChannelOLD({x, y}) {
   }
 }
 
-export function joinAdminChannel() {
+export const joinAdminChannel = () => ({ type: C.ADMIN_CHANNEL_JOIN });
+export const adminChannelJoined = () => ({ type: C.ADMIN_CHANNEL_JOINED });
+
+export function joinAdminChannelOld() {
   return ({ socket, dispatch }) => {
     const topic = 'admin:monitor';
     const channel = socket.channel(topic, {});

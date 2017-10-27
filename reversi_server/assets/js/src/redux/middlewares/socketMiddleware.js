@@ -1,11 +1,12 @@
 import { Socket } from 'phoenix';
 
 import C from '../constants';
-import { channelJoined, updateLocalState, } from '../actions';
+import { channelJoined, updateLocalState, updateAllGameState, adminChannelJoined } from '../actions';
 
 const socketMiddleware = (function () {
   let socket = null;  // should be persist once initialized
   let channel = null; // may be terminated, rejoin. Each client should be in a room at the same time.
+  let adminChannel = null;
 
   const connect = () => {
     socket = new Socket('/socket', { params: { token: window.userToken, player_id: window.player_id } });
@@ -17,8 +18,17 @@ const socketMiddleware = (function () {
     socket.onClose = onSocketClose();
   }
 
+  const connectIfNotConnected = () => {
+    if (!socket) {
+      connect();
+    }
+  }
+
   const onSocketClose = () => {
     console.log('onSocketClose');
+    // socket = null;
+    // channel = null;
+    // adminChannel = null;
     // const onSocketClose = (ws, store) => evt => {
     //Tell the store we've disconnected
     // store.dispatch(actions.disconnected());
@@ -37,15 +47,13 @@ const socketMiddleware = (function () {
         // store.dispatch(actions.connecting());
 
         //Attempt to connect (we could send a 'failed' action on error)
-        if (!socket) {
-          connect();
-        }
+        connectIfNotConnected();
 
         channel = socket.channel(topic, {});
 
         // Channel hooks
-        channel.onError(() => console.log("channel onError"));
-        channel.onClose(() => console.log("channel onClose - the channel has gone away gracefully"));
+        channel.onError(() => console.log('channel onError'));
+        channel.onClose(() => console.log('channel onClose - the channel has gone away gracefully'));
         channel.on(C.EVENT_STATE_UPDATED, game => {
           store.dispatch(updateLocalState({ cells: game.board.board }));
         });
@@ -97,6 +105,31 @@ const socketMiddleware = (function () {
         break;
       }
 
+      // User wants to join admin channel
+      case C.ADMIN_CHANNEL_JOIN: {
+
+        if (adminChannel) {
+          break;
+        }
+
+        // async action creator
+        next(dispatch => {
+          connectIfNotConnected();
+          const topic = C.EVENT_START_MONITORING;
+          adminChannel = socket.channel(topic, {});
+
+          // listen
+          adminChannel.on(C.ALL_GAMES_UPDATED, message => {
+            dispatch(updateAllGameState({ games: message.games }));
+          });
+
+          adminChannel
+            .join()
+            .receive('ok', _resp => dispatch(adminChannelJoined())) // meaningless action
+            .receive('error', ({reason}) => console.log('ws receive error:', reason));
+        });
+        break;
+      }
       //This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);
