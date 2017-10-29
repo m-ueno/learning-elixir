@@ -1,4 +1,7 @@
 defmodule ReversiServerWeb.GameChannel do
+  @moduledoc """
+  Channel for a game.
+  """
   require Logger
   use Phoenix.Channel
 
@@ -12,6 +15,11 @@ defmodule ReversiServerWeb.GameChannel do
   }
   alias ReversiServer.Game.Supervisor, as: GameSupervisor
 
+  @doc """
+  Spawn new game via GameSupervisor unless started
+
+  Returns %Game{} struct.
+  """
   def join("game:" <> game_id, _message, socket) do
     ret = GameSupervisor.create_game(game_id)
     Logger.debug("Spawned worker: " <> inspect(ret))
@@ -28,6 +36,15 @@ defmodule ReversiServerWeb.GameChannel do
     end
   end
 
+  @doc """
+  Handle add_step message for game_id
+
+  Returns two consecuitive responses.
+  The 1st response is asynchronous and the 2nd is synchronous.
+  Both response messages are %Game{} struct.
+
+  See also sequence diagram in `README.md`.
+  """
   def handle_in("game:add_step", %{"x" => x, "y" => y, "stone" => stone} = _message, socket) do
     game_id = socket.assigns.game_id
     {:ok, game} = Game.add_step(game_id, x, y, stone)

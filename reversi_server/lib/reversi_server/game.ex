@@ -1,6 +1,9 @@
 defmodule ReversiServer.Game do
+  @moduledoc """
+  Game is a stateful process supervised by `ReversiServer.Game.Supervisor`.
+  """
   require Logger
-  use GenServer # statefull process
+  use GenServer
   alias ReversiBoard.{
     Board,
     Robot,
@@ -37,8 +40,9 @@ defmodule ReversiServer.Game do
     {:ok, %__MODULE__{id: id, board: Board.new, player2: %Robot{}}}
   end
 
-  # game is `state`
-  ## handle_call/3 コールバック: {:atom, from_pid, state} -> {:reply, value, new_state}
+  # handle_call/3 callback
+  # receive {:atom, from_pid, state} and
+  # return  {:reply, value, new_state}
   def handle_call({:join, player_id, _pid}, _from, game) do
     Logger.debug "Handling :join for #{player_id} in Game #{game.id}"
 
@@ -88,6 +92,7 @@ defmodule ReversiServer.Game do
   # Generates global reference
   def ref(id), do: {:global, {:game, id}}
 
+  # Search process with given id and call given msg
   defp try_call(id, msg) do
     # returns a pid of a GenServer process
     case GenServer.whereis(ref(id)) do
