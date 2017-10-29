@@ -38,13 +38,18 @@ defmodule ReversiServerWeb.AdminChannel do
     |> Enum.map(fn {:ok, game} -> game end)
   end
 
-  def push_state_loop(socket) do
-    push socket, "all_game_state", %{games: all_game_state()}
   @doc """
   Push games state to given socket if state changed
   """
+  def push_state_loop(socket, prev_state \\ %{games: nil}) do
+    state = all_game_state()
+
+    if state != prev_state do
+      push socket, "all_game_state", %{games: all_game_state()}
+    end
+
     :timer.sleep(2000)
-    push_state_loop(socket)
+    push_state_loop(socket, state)
   end
 
   @doc "TBD"
