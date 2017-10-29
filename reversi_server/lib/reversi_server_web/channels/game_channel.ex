@@ -21,14 +21,17 @@ defmodule ReversiServerWeb.GameChannel do
   Returns %Game{} struct.
   """
   def join("game:" <> game_id, _message, socket) do
-    ret = GameSupervisor.create_game(game_id)
-    Logger.debug("Spawned worker: " <> inspect(ret))
-
     player_id = socket.assigns.player_id
+
+    case GameSupervisor.create_game(game_id) do
+      {:ok, child} ->
+        Logger.debug("Spawned worker: " <> inspect(child))
+      {:error, {:already_started, child}} ->
+        Logger.debug("already started:" <> inspect(child))
+    end
 
     case Game.join(game_id, player_id, socket.channel_pid) do
       {:ok, pid} ->
-        Process.monitor(pid)
         {:ok, game} = Game.get_data(game_id)
         {:ok, game, assign(socket, :game_id, game_id)}
       {:error, reason} ->
