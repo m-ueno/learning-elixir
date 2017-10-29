@@ -10,7 +10,19 @@ defmodule ReversiServer.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test],
+
+      # Docs
+      name: "ReversiServer",
+      source_url: "https://github.com/m-ueno/learning-elixir/tree/master/reversi_server",
+      homepage_url: "https://github.com/m-ueno/learning-elixir/tree/master/reversi_server",
+      docs: [
+        main: "ReversiServer", # The main page in the docs
+        #        logo: "path/to/logo.png",
+        extras: ["README.md"]
+      ],
     ]
   end
 
@@ -34,6 +46,10 @@ defmodule ReversiServer.Mixfile do
   defp deps do
     [
       {:reversi_board, path: "../reversi_board"},
+      {:excoveralls, "~> 0.7", only: :test},                   # mix coveralls.html
+      {:mix_test_watch, "~> 0.3", only: :dev, runtime: false}, # mix test.watch
+      {:ex_doc, "~> 0.16", only: :dev, runtime: false},        # mix docs
+      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}, # mix credo [--strict] : Credo is a static linter
 
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
