@@ -31,12 +31,14 @@ defmodule ReversiServer.Game.Supervisor do
   end
 
   def children do
-    Supervisor.which_children(__MODULE__)
+    pids = Supervisor.which_children(__MODULE__)
+
+    pids
     |> Enum.map(fn {_, child, _, _} -> child end)
   end
 
   def children_id do
-    children()
+    pids = children()
     |> Enum.map(fn pid -> GenServer.call(pid, :get_data) end)
     |> Enum.map(fn {:ok, obj} -> obj.id end)
   end

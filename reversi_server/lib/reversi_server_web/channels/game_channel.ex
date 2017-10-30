@@ -72,7 +72,7 @@ defmodule ReversiServerWeb.GameChannel do
   end
 
   def terminate(reason, socket) do
-    Logger.debug "Terminating GameChannel #{socket.assigns.game_id} #{inspect reason}"
+    Logger.debug fn -> "Terminating GameChannel #{socket.assigns.game_id} #{inspect reason}" end
 
     player_id = socket.assigns.player_id
     game_id = socket.assigns.game_id
@@ -85,5 +85,4 @@ defmodule ReversiServerWeb.GameChannel do
 
     :ok
   end
-
 end

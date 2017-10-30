@@ -44,7 +44,7 @@ defmodule ReversiServer.Game do
   # receive {:atom, from_pid, state} and
   # return  {:reply, value, new_state}
   def handle_call({:join, player_id, _pid}, _from, game) do
-    Logger.debug "Handling :join for #{player_id} in Game #{game.id}"
+    Logger.debug fn -> "Handling :join for #{player_id} in Game #{game.id}" end
 
     game = add_player(game, %{name: player_id})
 
