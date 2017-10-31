@@ -13,6 +13,7 @@ defmodule ReversiServer.Mixfile do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test],
+      dialyzer: [plt_add_deps: :transitive],
 
       # Docs
       name: "ReversiServer",
@@ -50,6 +51,7 @@ defmodule ReversiServer.Mixfile do
       {:mix_test_watch, "~> 0.3", only: :dev, runtime: false}, # mix test.watch
       {:ex_doc, "~> 0.16", only: :dev, runtime: false},        # mix docs
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false}, # mix credo [--strict] : Credo is a static linter
+      {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},   # mix dialyzer --plt : static analysis
 
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
