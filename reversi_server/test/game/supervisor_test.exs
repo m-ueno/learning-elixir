@@ -7,6 +7,13 @@ defmodule ReversiServerWeb.Game.SupervisorTest do
   setup_all do
     GameSupervisor.create_game("game1")
     GameSupervisor.create_game("game2")
+    on_exit(
+      make_ref(),
+      fn ->
+        pids = GameSupervisor.children_id()
+        pids
+        |> Enum.map(fn id -> GameSupervisor.destroy_game(id) end)
+      end)
     :ok
   end
 

@@ -1,4 +1,7 @@
 defmodule ReversiServerWeb.GameChannel do
+  @moduledoc """
+  Channel for a game.
+  """
   require Logger
   use Phoenix.Channel
 
@@ -12,15 +15,23 @@ defmodule ReversiServerWeb.GameChannel do
   }
   alias ReversiServer.Game.Supervisor, as: GameSupervisor
 
-  def join("game:" <> game_id, _message, socket) do
-    ret = GameSupervisor.create_game(game_id)
-    Logger.debug("Spawned worker: " <> inspect(ret))
+  @doc """
+  Spawn new game via GameSupervisor unless started
 
+  Returns %Game{} struct.
+  """
+  def join("game:" <> game_id, _message, socket) do
     player_id = socket.assigns.player_id
+
+    case GameSupervisor.create_game(game_id) do
+      {:ok, child} ->
+        Logger.debug("Spawned worker: " <> inspect(child))
+      {:error, {:already_started, child}} ->
+        Logger.debug("already started:" <> inspect(child))
+    end
 
     case Game.join(game_id, player_id, socket.channel_pid) do
       {:ok, pid} ->
-        Process.monitor(pid)
         {:ok, game} = Game.get_data(game_id)
         {:ok, game, assign(socket, :game_id, game_id)}
       {:error, reason} ->
@@ -28,6 +39,15 @@ defmodule ReversiServerWeb.GameChannel do
     end
   end
 
+  @doc """
+  Handle add_step message for game_id
+
+  Returns two consecuitive responses.
+  The 1st response is asynchronous and the 2nd is synchronous.
+  Both response messages are %Game{} struct.
+
+  See also sequence diagram in `README.md`.
+  """
   def handle_in("game:add_step", %{"x" => x, "y" => y, "stone" => stone} = _message, socket) do
     game_id = socket.assigns.game_id
     {:ok, game} = Game.add_step(game_id, x, y, stone)
@@ -52,7 +72,7 @@ defmodule ReversiServerWeb.GameChannel do
   end
 
   def terminate(reason, socket) do
-    Logger.debug "Terminating GameChannel #{socket.assigns.game_id} #{inspect reason}"
+    Logger.debug fn -> "Terminating GameChannel #{socket.assigns.game_id} #{inspect reason}" end
 
     player_id = socket.assigns.player_id
     game_id = socket.assigns.game_id
@@ -65,5 +85,4 @@ defmodule ReversiServerWeb.GameChannel do
 
     :ok
   end
-
 end

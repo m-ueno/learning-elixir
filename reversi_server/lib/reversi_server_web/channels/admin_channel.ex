@@ -1,4 +1,7 @@
 defmodule ReversiServerWeb.AdminChannel do
+  @moduledoc """
+  Channel for admin.
+  """
   require Logger
   use Phoenix.Channel
 
@@ -15,26 +18,41 @@ defmodule ReversiServerWeb.AdminChannel do
     {:ok, socket}
   end
 
+  @doc """
+  Spawn a loop process
+  """
   def handle_info(:after_join, socket) do
-    # push socket, "feed", %{list: feed_items(socket)}
-    # {:noreply, socket}
     pid = spawn_link fn -> push_state_loop(socket) end
+
     Logger.debug("Spawned loop:" <> inspect(pid))
+
     {:noreply, socket}
   end
 
+  @doc """
+  List all state of child of gamesupervisor
+  """
   def all_game_state do
     GameSupervisor.children_id
     |> Enum.map(fn game_id -> Game.get_data(game_id) end)
     |> Enum.map(fn {:ok, game} -> game end)
   end
 
-  def push_state_loop(socket) do
-    push socket, "all_game_state", %{games: all_game_state()}
+  @doc """
+  Push games state to given socket if state changed
+  """
+  def push_state_loop(socket, prev_state \\ %{games: nil}) do
+    state = all_game_state()
+
+    if state != prev_state do
+      push socket, "all_game_state", %{games: all_game_state()}
+    end
+
     :timer.sleep(2000)
-    push_state_loop(socket)
+    push_state_loop(socket, state)
   end
 
+  @doc "TBD"
   def terminate(_reason, _socket) do
     :ok
   end
